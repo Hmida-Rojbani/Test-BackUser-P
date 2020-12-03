@@ -30,19 +30,24 @@ public class UserRest {
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorRes> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		 // To Return 1 validation error
 		//return new ResponseEntity<String>(e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);
 		StringBuilder errors = new StringBuilder();
 		for (FieldError error : e.getBindingResult().getFieldErrors()) {
-			errors.append(error.getField() + "= "+ error.getDefaultMessage()+".\n");
+			errors.append(error.getField() + " : "+ error.getDefaultMessage()+".\n");
 		}
 		System.err.println(errors);
-		return new ResponseEntity<ErrorRes>(new ErrorRes(errors.toString()), HttpStatus.PARTIAL_CONTENT);
+		return new ResponseEntity<String>(errors.toString(), HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handleException(Exception e) {
+		 // To Return 1 validation error
+		//return new ResponseEntity<String>(e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST);
+		
+		return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
 	}
 }
-@Data
-@AllArgsConstructor
-class ErrorRes{
-	private String msgErrors;
-}
+
